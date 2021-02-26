@@ -1,0 +1,11 @@
+---
+
+- name: Deploying MySQL
+  hosts: db1
+  roles:
+    - role: mysql
+
+- name: Deploying Laravel
+  hosts: server1
+  roles:
+    - role: laravel

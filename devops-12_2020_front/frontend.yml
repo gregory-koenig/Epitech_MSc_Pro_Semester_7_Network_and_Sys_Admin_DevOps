@@ -1,0 +1,7 @@
+---
+
+- name: Deploy Frontend application
+  hosts: nsa-back
+  become: yes
+  roles:
+          - front

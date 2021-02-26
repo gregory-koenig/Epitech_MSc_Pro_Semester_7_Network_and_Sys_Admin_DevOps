@@ -1,0 +1,48 @@
+---
+
+- name: Installing packages
+  become: true
+  apt:
+          name: ['yum','git','nginx',"apache2","npm","nodejs"]
+          state: latest
+
+- name: installing yarn
+  become: true
+  shell: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add ; echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list ; sudo apt-get update ; sudo apt-get install yarn
+
+
+
+- name: Desactivate default nginx site
+  file:
+    path: /etc/nginx/sites-enables/default
+    state: absent
+  notify: Restart nginx
+
+- name: Ensure nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Git clone
+  git:
+    repo: 'http://192.168.0.15/root/t-nsa-frontend.git'
+    dest: /home/temp
+    force: yes          
+
+
+- name: yarn building
+  become: true
+  shell: 
+    cmd: yarn build
+    chdir: /home/temp
+
+          #- name: make sure htmp folder is empty
+  #become: true
+  #shell: 
+  #           cmd: sudo rm -r /var/www/html/*
+
+- name: copy dist to /var/www/html
+  become: true
+  shell: cp -R /home/temp/dist/front/* /var/www/html
+  

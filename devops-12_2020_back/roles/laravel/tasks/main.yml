@@ -1,0 +1,50 @@
+---
+
+- name: Update system
+  apt:    
+    update_cache: yes
+
+- name: Install Apache and Git
+  apt:
+    name:
+      - apache2
+      - git
+
+- name: Start Apache service
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Install packages
+  apt:
+    name:
+    - apt-transport-https
+    - ca-certificates
+
+- name: Add PHP GPG key
+  apt_key:
+    url : https://packages.sury.org/php/apt.gpg
+
+- name: Add Sury PHP DPA
+  apt_repository:
+    repo: "deb https://packages.sury.org/php/ buster main"
+    filename: /etc/apt/sources.list.d/php.list
+    update_cache: yes
+
+- name: Install PHP CLI
+  apt:
+    name:
+      - php7.4-cli
+      - libapache2-mod-php7.4
+
+- name: Clone repository 
+  git: 
+    repo: "http://192.168.1.38/root/devops-12_2020_back.git"
+    dest: /root/laravel
+
+- name: Copy .env
+  shell: cp /root/laravel/.env.example /root/laravel/.env
+
+- name: Build Laravel project
+  shell: cd /root/laravel && php artisan config:cache && php artisan migrate

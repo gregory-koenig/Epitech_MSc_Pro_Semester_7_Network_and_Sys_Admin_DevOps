@@ -1,0 +1,6 @@
+- hosts: nsa-db
+  become: yes
+  vars_files:
+        - variables/main.yml
+  roles: 
+        - { role: geerlingguy.mysql }
